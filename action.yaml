@@ -1,0 +1,47 @@
+name: 'Check PR Title'
+description: 'Check if PR title is valid'
+inputs:
+  org_github_token:
+    description: 'Github org token'
+    required: true
+  github_token:
+    description: 'Github token'
+    required: true
+  config_path:
+    description: 'Path for checker config json'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - name: Checkout repo config
+      uses: actions/checkout@v3
+      with:
+        repository: zapay-pagamentos/repo-config
+        token: ${{ inputs.org_github_token }}
+        path: repo-config
+    - name: Config repo settings
+      uses: zapay-pagamentos/zpy-platform-k8s-repo-config-action@main
+      with:
+        check_pr_title: 'true'
+    - uses: zapay-pagamentos/pr-title-checker@main
+      with:
+        configuration_path: ${{ inputs.config_path }}
+        GITHUB_TOKEN: ${{ inputs.org_github_token }}
+        use_local_config: true
+    - name: Get JSON config
+      if: failure()
+      id: get_message
+      shell: bash
+      run: |
+          message=$(jq .COMMENT.message $CONFIG_PATH | sed 's/"//g')
+          echo "::set-output name=message::$message"
+    - uses: zapay-pagamentos/add-pr-comment@master
+      if: failure()
+      with:
+        message: |
+          ${{ steps.get_message.outputs.message }}
+        repo-token-user-login: github-actions[bot]
+      env:
+        GITHUB_TOKEN: ${{ inputs.org_github_token }}
