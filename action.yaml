@@ -7,9 +7,6 @@ inputs:
   github_token:
     description: 'Github token'
     required: true
-  config_path:
-    description: 'Path for checker config json'
-    required: true
 
 runs:
   using: "composite"
@@ -27,7 +24,7 @@ runs:
         check_pr_title: 'true'
     - uses: zapay-pagamentos/pr-title-checker@main
       with:
-        configuration_path: ${{ inputs.config_path }}
+        configuration_path: ".github/pr-title-checker-config.json"
         GITHUB_TOKEN: ${{ inputs.org_github_token }}
         use_local_config: true
     - name: Get JSON config
