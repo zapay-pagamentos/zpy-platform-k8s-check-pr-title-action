@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: zpy-platform-k8s-check-pr-title-action
+  description: Github Action to check if PR title format is valid
+  annotations:
+    github.com/project-slug: zapay-pagamentos/zpy-platform-k8s-check-pr-title-action
+spec:
+  type: library
+  lifecycle: production
+  owner: darrell
