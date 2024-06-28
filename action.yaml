@@ -4,16 +4,14 @@ inputs:
   org_github_token:
     description: 'Github org token'
     required: true
-  github_token:
-    description: 'Github token'
-    required: true
 
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
     - name: Checkout repo config
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: zapay-pagamentos/repo-config
         token: ${{ inputs.org_github_token }}
@@ -33,7 +31,7 @@ runs:
       shell: bash
       run: |
           message=$(jq .COMMENT.message $CONFIG_PATH | sed 's/"//g')
-          echo "::set-output name=message::$message"
+          echo "message=$message" >> $GITHUB_OUTPUT
     - uses: zapay-pagamentos/add-pr-comment@master
       if: failure()
       with:
